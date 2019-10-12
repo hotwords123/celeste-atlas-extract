@@ -1,0 +1,24 @@
+{
+  "name": "celeste-atlas-extract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hotwords123/celeste-atlas-extract.git"
+  },
+  "author": "hotwords123",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hotwords123/celeste-atlas-extract/issues"
+  },
+  "homepage": "https://github.com/hotwords123/celeste-atlas-extract#readme",
+  "dependencies": {
+    "electron": "^6.0.12",
+    "fs-extra": "^8.1.0"
+  }
+}
