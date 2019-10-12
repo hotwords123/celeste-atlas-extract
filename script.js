@@ -89,22 +89,31 @@ async function extractAtlas(buffer) {
     return await canvasToBlob(canvas, 'image/png');
 }
 
-async function scanPath(path, relative = '') {
+async function scanPath(path) {
     let files = await fs.readdir(path);
     let result = [];
     for (let file of files) {
         let fullPath = Path.join(path, file);
-        let relativePath = Path.join(relative, file);
         let stat = await fs.stat(fullPath);
         if (stat.isDirectory()) {
-            result = result.concat(await scanPath(fullPath, relativePath));
+            let subFiles = await scanPath(fullPath);
+            subFiles.forEach(sub => {
+                result.push(Path.join(file, sub));
+            });
         } else {
             if (file.endsWith('.data')) {
-                result.push(relativePath);
+                result.push(file);
             }
         }
     }
     return result;
+}
+
+async function ensureDirs(base, files) {
+    let set = new Set(files.map(file => Path.dirname(file)));
+    for (let dir of set) {
+        await fs.ensureDir(Path.join(base, dir));
+    }
 }
 
 btn_ok.addEventListener('click', async function() {
@@ -121,9 +130,11 @@ btn_ok.addEventListener('click', async function() {
         let startTime = Date.now();
         updateStatus('Scanning files...');
         let files = await scanPath(path);
+        updateStatus('Creating directories...');
+        await ensureDirs(saveDir, files);
         for (let i = 0; i < files.length; ++i) {
             let file = files[i];
-            updateStatus(`Extract file: ${file} (${i + 1}/${files.length})`);
+            updateStatus(`Extracting file: ${file} (${i + 1}/${files.length})`);
             let fullPath = Path.join(path, file);
             let buffer = toArrayBuffer(await fs.readFile(fullPath));
             let blob = await extractAtlas(buffer);
